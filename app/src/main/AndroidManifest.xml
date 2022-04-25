@@ -32,6 +32,14 @@
                 android:name=".MainActivity"
                 android:screenOrientation="portrait">
         </activity>
+        <activity
+                android:name=".other_activity.TransactionActivity"
+                android:screenOrientation="portrait">
+        </activity>
+        <activity
+                android:name=".other_activity.NotifyControlActivity"
+                android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>

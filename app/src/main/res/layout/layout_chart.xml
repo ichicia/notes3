@@ -4,10 +4,10 @@
               android:layout_height="match_parent"
               android:background="@color/white">
 
-<!--    <com.github.mikephil.charting.charts.PieChart-->
-<!--            android:id="@+id/consume_pie_chart"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_marginRight="16dp"-->
-<!--            android:layout_marginLeft="16dp"-->
-<!--            android:layout_height="320dip" />-->
+    <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/candleStickChart"
+            android:layout_width="match_parent"
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_height="320dip" />
 </LinearLayout>
