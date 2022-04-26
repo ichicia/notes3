@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case "统计":
-                showChart();
+                showChart(getPieData());
 //                Intent intent1 = new Intent(this, NotifyControlActivity.class);
 //                startActivity(intent1);
                 break;
@@ -193,6 +194,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         legend.setYEntrySpace(15f);
         //设置初始动画
         pieChart.animateXY(1000, 1000);
+
+        final PopupWindow popupWindow = new PopupWindow(inflate, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//
+        popupWindow.setBackgroundDrawable(new ColorDrawable());//设置背景色
+        popupWindow.setOutsideTouchable(true);//设置popwindow  外部可点击
+
+        popupWindow.setFocusable(true);//聚焦
+
+        popupWindow.setAnimationStyle(R.style.Widget_AppCompat_Light_PopupMenu);//设置动画
+        setBackGroundAlpha(0.5f);//设置背景透明度
+
+        popupWindow.showAtLocation(inflate, Gravity.CENTER, 0, 0);//局内显示位置
+
+        //设置pop消失监听
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                setBackGroundAlpha(1f);//消失背景色恢复正常
+            }
+        });
     }
 
     private PieData getPieData() {
@@ -201,10 +222,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         float i2 = 0;
 
         for (int i = 0; i < cursor.getCount(); i++) {
-            cursor.moveToPosition(0);
+            cursor.moveToPosition(i);
             String string = cursor.getString(cursor.getColumnIndex(NotesDB.PLAN_TIME));
-            if ("".equals(string)) {
+            if (!"".equals(string)) {
                 String string1 = cursor.getString(cursor.getColumnIndex(NotesDB.OK));
+                Log.e("getPieData: " + i, string1);
                 if ("777".equals(string1)) {
                     i1++;
                 } else if ("1".equals(string1)) {
@@ -218,9 +240,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         xValues.add("已完成");
         xValues.add("未完成");
         //衣食住行占得比例
+        String s = String.valueOf(i1 / (i1 + i2));
+        String s1 = String.valueOf(i2 / (i1 + i2));
         ArrayList<PieEntry> yrrayList = new ArrayList();
-        yrrayList.add(new PieEntry(i1, 0));
-        yrrayList.add(new PieEntry(i2, 1));
+        yrrayList.add(new PieEntry(i1, "已完成" + s.substring(0,4) + "%"));
+        yrrayList.add(new PieEntry(i2, "未完成" + s1.substring(0,4) + "%"));
         PieDataSet pieDataSet = new PieDataSet(yrrayList, "完成比例");
         pieDataSet.setSliceSpace(1f);
         //饼状图的颜色
@@ -234,12 +258,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //设置圆盘的文字颜色
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueFormatter(new IValueFormatter() {
-            @Override
-            public String getFormattedValue(float v, Entry entry, int i, ViewPortHandler viewPortHandler) {
-                return "" + entry.getData() + "%";
-            }
-        });
 //        DisplayMetrics 分辨率
         DisplayMetrics mdisplayMetrics = getResources().getDisplayMetrics();
         float px = 5 * (mdisplayMetrics.densityDpi / 160f);

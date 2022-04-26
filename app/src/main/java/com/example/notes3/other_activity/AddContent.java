@@ -253,7 +253,7 @@ public class AddContent extends AppCompatActivity implements View.OnClickListene
         values.put(NotesDB.PLAN_TIME, s);
         long insert = dbWriter.insert(NotesDB.TABLE_NAME, null, values);
 
-        if (type == 777 && insert == 1) {
+        if (type == 777 && insert != 0) {
             Long[] diff = getDiff(transform(s));
             Log.e("addDataToDB: ",diff.toString());
             startAlarm(Integer.parseInt(String.valueOf(diff[0]))
@@ -359,8 +359,7 @@ public class AddContent extends AppCompatActivity implements View.OnClickListene
             e.printStackTrace();
         }
         // GMT时间转成当前时区的时间
-        to = simple.format(fromDate);
-        return Long.parseLong(to);
+        return fromDate.getTime();
     }
 
 }

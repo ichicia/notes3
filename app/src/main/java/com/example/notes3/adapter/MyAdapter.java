@@ -83,13 +83,14 @@ public class MyAdapter extends BaseAdapter {
         String string1 = cursor.getString(cursor.getColumnIndex(NotesDB.PLAN_TIME));
         if ("777".equals(string)) {
             list_status_cell.setText("事务已完成->开始时间->" + string1);
+            btu_ok.setVisibility(View.GONE);
         } else {
             list_status_cell.setText("事务未完成->开始时间->" + string1);
+            btu_ok.setVisibility(View.VISIBLE);
         }
 
         if (type == 1) {
             list_status_cell.setVisibility(View.VISIBLE);
-            btu_ok.setVisibility(View.VISIBLE);
         } else {
             list_status_cell.setVisibility(View.GONE);
             btu_ok.setVisibility(View.GONE);
@@ -106,7 +107,8 @@ public class MyAdapter extends BaseAdapter {
             public void onClick(View view) {
                 TransactionActivity transactionActivity = (TransactionActivity) context;
                 transactionActivity.updateData(cursor.getInt(cursor.getColumnIndex(NotesDB.ID)));
-                notifyDataSetChanged();
+                transactionActivity.refreshDataFromDB();
+                Toast.makeText(transactionActivity, "事务已完成", Toast.LENGTH_SHORT).show();
             }
         });
 

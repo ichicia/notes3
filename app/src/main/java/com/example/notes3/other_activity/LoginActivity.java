@@ -79,20 +79,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
 
-        // 计算出控件的高与宽
-        mWidth = mBtnLogin.getMeasuredWidth();
-        mHeight = mBtnLogin.getMeasuredHeight();
-        // 隐藏输入框
-        mName.setVisibility(View.INVISIBLE);
-        mPsw.setVisibility(View.INVISIBLE);
-
-        inputAnimator(mInputLayout, mWidth, mHeight);
-
-        login();
-
-    }
-
-    private void login() {
         String string1 = userName.getText().toString();
         String string2 = password.getText().toString();
         if (string1 == null) {
@@ -103,6 +89,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(this, "密码不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // 计算出控件的高与宽
+        mWidth = mBtnLogin.getMeasuredWidth();
+        mHeight = mBtnLogin.getMeasuredHeight();
+        // 隐藏输入框
+        mName.setVisibility(View.INVISIBLE);
+        mPsw.setVisibility(View.INVISIBLE);
+
+        inputAnimator(mInputLayout, mWidth, mHeight,1);
+
+        login(string1, string2);
+
+    }
+
+    private void login(String string1, String string2) {
         cursor = daReader.query(NotesDB.TABLE_USER, null, NotesDB.ACCOUNT + "=?",
                 new String[]{string1}, null, null, null);
         if (cursor.moveToNext()) {
@@ -114,6 +115,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 finish();
             } else {
                 Toast.makeText(this, "密码错误", Toast.LENGTH_SHORT).show();
+                refreView();
             }
         } else {
             //不存在用户，新增用户
@@ -129,14 +131,24 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void refreView() {
+        // 显示输入框
+        mName.setVisibility(View.VISIBLE);
+        mPsw.setVisibility(View.VISIBLE);
+
+        inputAnimator(mInputLayout, mWidth, mHeight,7);
+    }
+
+
     /**
      * 输入框的动画效果
      *
      * @param view 控件
      * @param w    宽
      * @param h    高
+     * @param type 显示
      */
-    private void inputAnimator(final View view, float w, float h) {
+    private void inputAnimator(final View view, float w, float h, int type) {
 
         AnimatorSet set = new AnimatorSet();
 
@@ -156,6 +168,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         ObjectAnimator animator2 = ObjectAnimator.ofFloat(mInputLayout,
                 "scaleX", 1f, 0.5f);
+        if (type == 7) {
+            animator2 = ObjectAnimator.ofFloat(mInputLayout,
+                    "scaleX", 0.5f, 1f);
+        }
         set.setDuration(1000);
         set.setInterpolator(new AccelerateDecelerateInterpolator());
         set.playTogether(animator, animator2);
@@ -174,12 +190,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                /**
-                 * 动画结束后，先显示加载的动画，然后再隐藏输入框
-                 */
-                progress.setVisibility(View.VISIBLE);
-                progressAnimator(progress);
-                mInputLayout.setVisibility(View.INVISIBLE);
+                if (type == 7) {
+                    progress.setVisibility(View.INVISIBLE);
+//                    progressAnimator(progress);
+                    mInputLayout.setVisibility(View.VISIBLE);
+                } else {
+                    /**
+                     * 动画结束后，先显示加载的动画，然后再隐藏输入框
+                     */
+                    progress.setVisibility(View.VISIBLE);
+                    progressAnimator(progress);
+                    mInputLayout.setVisibility(View.INVISIBLE);
+                }
 
             }
 

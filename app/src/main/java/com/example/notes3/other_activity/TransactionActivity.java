@@ -67,6 +67,11 @@ public class TransactionActivity extends AppCompatActivity {
         listView.setAdapter(myAdapter);
     }
 
+    public void refreshDataFromDB() {
+        cursor = daReader.query(NotesDB.TABLE_NAME, null, null,
+                null, null, null, null);
+        myAdapter.notifyDataSetChanged();
+    }
 
     public void updateData(int id) {
         ContentValues contentValues = new ContentValues();
